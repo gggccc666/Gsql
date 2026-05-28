@@ -2,3 +2,11 @@
 思路.md
 编码设计.md
 学习笔记.md
+
+*.exe
+*.out
+*.o
+*.obj
+
+src/client/client
+src/server/gsql_server
