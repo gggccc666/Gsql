@@ -2,9 +2,9 @@
 #include<string>
 #include<cstdlib>
 
-#include<client.h>
+#include"client.h"
 
-#include "common/utils/string_utils.h"
+#include "../common/utils/string_utils.h"
 namespace gsql{
     bool AuthManager::login(const std::string& account,const std::string& password){
         return account == DEFAULT_USER && password == DEFAULT_PASSWORD;
@@ -22,10 +22,10 @@ namespace gsql{
     void PrintInterractor::displayTips(){
 
         std::cout<<"type \"help\" to get help"<<std::endl;
-        std::cout<<"type \"exit\" or \"quit\" to leave Gsql";
-        std::cout<<"type \"clear\"  to clear screen.\n";
+        std::cout<<"type \"exit\" or \"quit\" to leave Gsql"<<std::endl;
+        std::cout<<"type \"clear\"  to clear screen.\n"<<std::endl;
         std::cout<<"notice that your sql statement should end with a \";\""<<std::endl;
-        std::cout<<"tips:Gsql's input is not so automatic,so like \"insert into table_name() values(\"abc;def\")\"will cause bugs because of \";\""<<std::endl;
+        std::cout<<"tips:Gsql's input algorithm is not so strong,so sentenses like \"insert into table_name() values(\"abc;def\")\"will cause bugs because of \";\""<<std::endl;
     }
     void PrintInterractor::displayHelp() {
         std::cout << "\n";
@@ -92,12 +92,12 @@ namespace gsql{
                 return ""; 
             }
             std::string subline=trim(line);
-
+            
             if(subline.empty()){
                 continue;
             }
             if(flag_first){
-                if (subline == "exit" || subline == "quit") {
+                if (subline == "exit" || subline == "quit" || subline == "exit;" || subline == "quit;" ) {
                     return subline;
                 }
 
@@ -120,13 +120,13 @@ namespace gsql{
         return sql;
     }
     bool SqlCollector::isMetaCommand(const std::string& line) {
-        return line == "help" || line == "clear";
+        return line == "help" || line == "clear"|| line == "help;" || line == "clear;";
     }
     void SqlCollector::handleMetaCommand(const std::string& line) {
-        if (line == "help") {
+        if (line == "help"||line=="help;") {
            PrintInterractor::displayHelp();
         } 
-        else if (line == "clear") {
+        else if (line == "clear"||line == "clear;") {
         #ifdef _WIN32
             system("cls");
         #else
@@ -136,7 +136,15 @@ namespace gsql{
     }
     void GsqlClient::run(){
         PrintInterractor::displayWelcome();
-        PrintInterractor::doLoginWithRetry(5);
+        if(!PrintInterractor::doLoginWithRetry(5))return;
         PrintInterractor::displayTips();
+        std::string sql;
+        while(true){
+            sql=SqlCollector::collectSQL();
+            if (std::cin.eof()) break;  
+            if(sql=="exit" || sql=="quit" || sql=="exit;" || sql=="quit;")break;
+            if (sql.empty()) continue;
+        }
+        std::cout << "Goodbye!" << std::endl;
     }
 }

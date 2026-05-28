@@ -26,7 +26,7 @@
 #define GSQL_CLIENT_H
 
 #include<string>
-#include "common/protocol.h"
+#include "../common/protocol.h"
 
 namespace gsql{
     class AuthManager{
