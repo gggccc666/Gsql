@@ -60,7 +60,19 @@ namespace gsql{
 };
     class GsqlClient{
         private:
+            int sockfd_;
+            bool connected_;
+
+            bool connectToServer(const std::string& ip,int port);
+            void disconnect();
+
+            bool sendMessage(const Message& msg);
+            bool recvMessage(Message& msg);
+
+            bool doServerLogin();
         public:
+            GsqlClient();
+            ~GsqlClient();
             void run();
     };
 }
